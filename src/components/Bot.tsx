@@ -1,6 +1,8 @@
 import fetchMetadata from '../api/metadataService';
-// Add this inside the Bot component definition
-const [metadata, setMetadata] = createSignal({ title: '', image: '', description: '', url: '' });
+// Importing the Metadata interface
+import { Metadata } from '../index'; // Update the path as necessary to where your interface is defined
+
+const [metadata, setMetadata] = createSignal<Metadata>({ title: '', image: '', description: '', url: '' });
 
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
@@ -206,20 +208,20 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [isDragActive, setIsDragActive] = createSignal(false);
 
   // Added the handleSourceDocumentMetadata function for preview URLs here
-const handleSourceDocumentMetadata = async (sourceDocuments: any) => {
-  for (const source of sourceDocuments) {
-    if (source.metadata && source.metadata.source && isValidURL(source.metadata.source)) {
-      try {
-        const fetchedMetadata = await fetchMetadata(source.metadata.source);
-        // Now, call a function to update your source document with this metadata
-        // This could be a state setter if using a Solid.js store or some other state management
-        updateSourceDocumentMetadata(source, fetchedMetadata);
-      } catch (error) {
-        console.error('Error fetching metadata for URL:', source.metadata.source, error);
+  const handleSourceDocumentMetadataUpdated = async (sourceDocuments: any) => {
+    for (const source of sourceDocuments) {
+      if (source.metadata && source.metadata.source && isValidURL(source.metadata.source)) {
+        try {
+          const fetchedMetadata = await fetchMetadata(source.metadata.source);
+          // Now, call a function to update your source document with this metadata
+          // This could be a state setter if using a Solid.js store or some other state management
+          handleSourceDocumentMetadataUpdated(fetchedMetadata);
+        } catch (error) {
+          console.error('Error fetching metadata for URL:', source.metadata.source, error);
+        }
       }
     }
-  }
-};
+  };
 
   onMount(() => {
     if (botProps?.observersConfig) {
@@ -309,20 +311,20 @@ const handleSourceDocumentMetadata = async (sourceDocuments: any) => {
   };
 
   // Place the handleSourceDocumentMetadata function here
-const handleSourceDocumentMetadata = async (sourceDocuments: any) => {
-  for (const source of sourceDocuments) {
-    if (source.metadata && source.metadata.source && isValidURL(source.metadata.source)) {
-      try {
-        const fetchedMetadata = await fetchMetadata(source.metadata.source);
-        // Now, call a function to update your source document with this metadata
-        // This could be a state setter if using a Solid.js store or some other state management
-        updateSourceDocumentMetadata(source, fetchedMetadata);
-      } catch (error) {
-        console.error('Error fetching metadata for URL:', source.metadata.source, error);
+  const handleSourceDocumentMetadata = async (sourceDocuments: any) => {
+    for (const source of sourceDocuments) {
+      if (source.metadata && source.metadata.source && isValidURL(source.metadata.source)) {
+        try {
+          const fetchedMetadata = await fetchMetadata(source.metadata.source);
+          // Now, call a function to update your source document with this metadata
+          // This could be a state setter if using a Solid.js store or some other state management
+          handleSourceDocumentMetadata(source);
+        } catch (error) {
+          console.error('Error fetching metadata for URL:', source.metadata.source, error);
+        }
       }
     }
-  }
-};
+  };
 
   // Handle form submission
   const handleSubmit = async (value: string) => {
@@ -398,9 +400,9 @@ const handleSourceDocumentMetadata = async (sourceDocuments: any) => {
       }
       // After getting a successful response, check if there are sourceDocuments
       if (result.data.sourceDocuments) {
-      // Here you call the function to handle metadata fetching for source documents
-      await handleSourceDocumentMetadata(result.data.sourceDocuments);
-      } 
+        // Here you call the function to handle metadata fetching for source documents
+        await handleSourceDocumentMetadata(result.data.sourceDocuments);
+      }
       if (urls && urls.length > 0) {
         setMessages((data) => {
           const messages = data.map((item, i) => {

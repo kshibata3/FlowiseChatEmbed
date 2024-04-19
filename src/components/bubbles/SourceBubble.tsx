@@ -20,9 +20,7 @@ export const SourceBubble = (props: Props) => (
         cursor: 'pointer',
       }}
     >
-      {props.metadata.image && (
-        <img src={props.metadata.image} alt="Preview" class="w-16 h-16 object-cover mr-2 rounded-lg" />
-      )}
+      {props.metadata.image && <img src={props.metadata.image} alt="Preview" class="w-16 h-16 object-cover mr-2 rounded-lg" />}
       <div class="flex flex-col">
         <span class="text-lg font-semibold">{props.metadata.title}</span>
         <span class="text-sm">{props.metadata.description}</span>
@@ -30,4 +28,3 @@ export const SourceBubble = (props: Props) => (
     </div>
   </>
 );
-
