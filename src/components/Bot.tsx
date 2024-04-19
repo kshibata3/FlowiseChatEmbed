@@ -367,7 +367,16 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       chatId: chatId(),
     };
 
-    if (urls && urls.length > 0) body.uploads = urls;
+    if (urls && urls.length > 0) {
+      for (const url of urls) {
+        const metadata = await fetchMetadata(url.data.toString()); // Convert ArrayBuffer to string before passing it to fetchMetadata
+        const sourceDocument = {
+          pageContent: url.data, // Simplistic handling, you might want to adjust
+          metadata: metadata,
+        };
+        updateLastMessageSourceDocuments([sourceDocument]); // You need to ensure this function can handle adding new source documents
+      }
+    }
 
     if (props.chatflowConfig) body.overrideConfig = props.chatflowConfig;
 
@@ -897,24 +906,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                     {message.type === 'apiMessage' && message.message === '' && loading() && index() === messages().length - 1 && <LoadingBubble />}
                     {message.sourceDocuments && message.sourceDocuments.length && (
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
-                        <For each={[...removeDuplicateURL(message)]}>
-                          {(src) => {
-                            const URL = isValidURL(src.metadata.source);
-                            return (
+                        <For each={message.sourceDocuments}>
+                          {(src) => (
                               <SourceBubble
-                                pageContent={URL ? URL.pathname : src.pageContent}
+                                pageContent={src.pageContent}
                                 metadata={src.metadata}
-                                onSourceClick={() => {
-                                  if (URL) {
-                                    window.open(src.metadata.source, '_blank');
-                                  } else {
-                                    setSourcePopupSrc(src);
-                                    setSourcePopupOpen(true);
-                                  }
-                                }}
+                                onSourceClick={() => window.open(src.metadata.url, '_blank')}
                               />
-                            );
-                          }}
+                          )}
                         </For>
                       </div>
                     )}
