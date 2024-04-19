@@ -1,3 +1,5 @@
+export default fetchMetadata;
+
 const fetchMetadata = async (url) => {
   try {
     const apiKey = '500ea4641f1b0acfc3e91eed823c3be2'; // Replace 'YOUR_API_KEY' with your actual LinkPreview API key
@@ -17,8 +19,17 @@ const fetchMetadata = async (url) => {
     };
   } catch (error) {
     console.error('Error fetching metadata:', error);
-    throw error; // Re-throw to handle it in the calling code
+    // Return a default metadata object with a placeholder image
+    return {
+      title: 'No title available',
+      image: 'default_placeholder_image.png', // Path to a default image
+      description: 'No description available',
+      url: url,
+    };
   }
-};
 
-export default fetchMetadata;
+
+
+
+
+}
