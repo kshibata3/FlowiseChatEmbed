@@ -908,11 +908,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                       <div style={{ display: 'flex', 'flex-direction': 'row', width: '100%', 'flex-wrap': 'wrap' }}>
                         <For each={message.sourceDocuments}>
                           {(src) => (
-                              <SourceBubble
-                                pageContent={src.pageContent}
-                                metadata={src.metadata}
-                                onSourceClick={() => window.open(src.metadata.url, '_blank')}
-                              />
+                            <SourceBubble
+                              pageContent={src.pageContent}
+                              metadata={src.metadata}
+                              onSourceClick={() => window.open(src.metadata.url, '_blank')}
+                            />
                           )}
                         </For>
                       </div>
