@@ -1,3 +1,7 @@
+import fetchMetadata from '../api/metadataService';
+// Add this inside the Bot component definition
+const [metadata, setMetadata] = createSignal({ title: '', image: '', description: '', url: '' });
+
 import { createSignal, createEffect, For, onMount, Show, mergeProps, on, createMemo } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import { sendMessageQuery, isStreamAvailableQuery, IncomingInput, getChatbotConfig } from '@/queries/sendMessageQuery';
@@ -201,6 +205,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   // drag & drop
   const [isDragActive, setIsDragActive] = createSignal(false);
 
+  // Added the handleSourceDocumentMetadata function for preview URLs here
+const handleSourceDocumentMetadata = async (sourceDocuments: any) => {
+  for (const source of sourceDocuments) {
+    if (source.metadata && source.metadata.source && isValidURL(source.metadata.source)) {
+      try {
+        const fetchedMetadata = await fetchMetadata(source.metadata.source);
+        // Now, call a function to update your source document with this metadata
+        // This could be a state setter if using a Solid.js store or some other state management
+        updateSourceDocumentMetadata(source, fetchedMetadata);
+      } catch (error) {
+        console.error('Error fetching metadata for URL:', source.metadata.source, error);
+      }
+    }
+  }
+};
+
   onMount(() => {
     if (botProps?.observersConfig) {
       const { observeUserInput, observeLoading, observeMessages } = botProps.observersConfig;
@@ -288,6 +308,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     handleSubmit(prompt);
   };
 
+  // Place the handleSourceDocumentMetadata function here
+const handleSourceDocumentMetadata = async (sourceDocuments: any) => {
+  for (const source of sourceDocuments) {
+    if (source.metadata && source.metadata.source && isValidURL(source.metadata.source)) {
+      try {
+        const fetchedMetadata = await fetchMetadata(source.metadata.source);
+        // Now, call a function to update your source document with this metadata
+        // This could be a state setter if using a Solid.js store or some other state management
+        updateSourceDocumentMetadata(source, fetchedMetadata);
+      } catch (error) {
+        console.error('Error fetching metadata for URL:', source.metadata.source, error);
+      }
+    }
+  }
+};
+
   // Handle form submission
   const handleSubmit = async (value: string) => {
     setUserInput(value);
@@ -360,6 +396,11 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           return [...messages];
         });
       }
+      // After getting a successful response, check if there are sourceDocuments
+      if (result.data.sourceDocuments) {
+      // Here you call the function to handle metadata fetching for source documents
+      await handleSourceDocumentMetadata(result.data.sourceDocuments);
+      } 
       if (urls && urls.length > 0) {
         setMessages((data) => {
           const messages = data.map((item, i) => {
